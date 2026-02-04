@@ -16,37 +16,32 @@ services:
       - frontend
     security_opt:
       - no-new-privileges:true
+
   web:
     restart: always
     build: ./web
     secrets:
-      - source: postgres_user
-        target: postgres_user
-        uid: "1000"
-        gid: "1000"
-        mode: 0440
-      - source: postgres_password
-        target: postgres_password
-        uid: "1000"
-        gid: "1000"
-        mode: 0440
+      - postgres_user
+      - postgres_password
     environment:
-      DEBUG: False
+      DEBUG: "False"
       POSTGRES_DB: db
-      DATABASE_PORT: 5432
-      POSTGRES_USER_FILE: /run/secrets/postgres_user
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      DATABASE_PORT: "5432"
     depends_on:
       - postgres
     command: >
-      sh -c "python3 ./create_db.py &&
-        gunicorn -w 2 -b 0.0.0.0:8000 app:app"
+      sh -c "
+        export POSTGRES_USER=$(cat /run/secrets/postgres_user) &&
+        export POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password) &&
+        python3 ./create_db.py &&
+        exec gunicorn -w 2 -b 0.0.0.0:8000 app:app
+      "
     networks:
       - frontend
       - backend
     security_opt:
       - no-new-privileges:true
-   
+
   postgres:
     restart: always
     image: postgres:15-alpine
@@ -59,14 +54,17 @@ services:
       POSTGRES_DB: db
       POSTGRES_USER_FILE: /run/secrets/postgres_user
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    expose:
+      - "5432"
     networks:
       - backend
     security_opt:
       - no-new-privileges:true
-   
+
 volumes:
   db-data:
 
 networks:
   frontend:
   backend:
+    internal: true
