@@ -14,8 +14,11 @@ services:
       - ./web/static:/static
     networks:
       - frontend
+    depends_on:
+      - web
     security_opt:
       - no-new-privileges:true
+    
 
   web:
     restart: always
