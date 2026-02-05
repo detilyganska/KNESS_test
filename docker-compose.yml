@@ -23,6 +23,7 @@ services:
   web:
     restart: always
     build: ./web
+    user: "0:0"
     secrets:
       - postgres_user
       - postgres_password
@@ -36,7 +37,7 @@ services:
       - postgres
     command: >
       sh -c "python3 ./create_db.py &&
-            exec gunicorn -w 2 -b 0.0.0.0:8000 app:app"
+             exec gunicorn -w 2 -b 0.0.0.0:8000 app:app"
     networks:
       - frontend
       - backend
