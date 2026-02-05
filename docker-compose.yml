@@ -20,10 +20,17 @@ services:
   web:
     restart: always
     build: ./web
-    user: "0:0"
     secrets:
-      - postgres_user
-      - postgres_password
+      - source: postgres_user
+        target: postgres_user
+        uid: "1000"
+        gid: "1000"
+        mode: 0440
+      - source: postgres_password
+        target: postgres_password
+        uid: "1000"
+        gid: "1000"
+        mode: 0440
     environment:
       DEBUG: "False"
       POSTGRES_DB: db
