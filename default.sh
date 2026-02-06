@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ===== CONFIG=====
-REPO_URL="https://github.com/detilyganska/test.git"
+REPO_URL="https://github.com/detilyganska/KNESS_test.git"
 APP_DIR="/opt/app"
 
 # Postgres creds stored as docker secrets files inside APP_DIR/secrets
